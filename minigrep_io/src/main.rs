@@ -4,7 +4,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     // dbg!(args); -> commenting this line as args moved into the dbg! macro
     let config = Config::build(&args).unwrap_or_else(|err| {
-        println!("problem parsing arguments! {}", err);
+        eprintln!("problem parsing arguments! {}", err);
         process::exit(1);
     });
 
@@ -12,7 +12,7 @@ fn main() {
     println!("in file '{}'", config.file_path);
 
     if let Err(e) = minigrep_io::run(config) {
-        println!("Application error: {}", e);
+        eprintln!("Application error: {}", e);
         process::exit(1);
     }
 }
