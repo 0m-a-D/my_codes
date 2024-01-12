@@ -7,7 +7,6 @@ fn main() {
         eprintln!("problem parsing arguments! {}", err);
         process::exit(1);
     });
-
     println!("Searching for '{}'", config.query);
     println!("in file '{}'", config.file_path);
 
