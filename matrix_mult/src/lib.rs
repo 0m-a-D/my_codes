@@ -2,9 +2,16 @@ use std::io;
 pub struct Matrix {
     pub row: usize,
     pub col: usize,
-    pub elements: Vec<Vec<f32>>, /* need more understanding */
+    pub elements: Vec<Vec<f32>>,
 }
 impl Matrix {
+    pub fn new() -> Matrix {
+        Matrix {
+            row: 0,
+            col: 0,
+            elements: vec![vec![0.0; 0]; 0],
+        }
+    }
     pub fn input_dim(&mut self) {
         println!("enter number of rows: ");
         let mut input = String::new();
@@ -22,11 +29,13 @@ impl Matrix {
 
         self.elements = vec![vec![0.0; self.col]; self.row];
     }
-    pub fn input_dim_valid(&self, other: &Matrix) {
+    pub fn input_dim_valid(&self, other: &Matrix) -> bool {
         if self.col != other.row {
             panic!("Invalid dimensions for matrix multiplication! Aborting");
+            return false;
         } else {
-            println!("Matrix dimensions verified for multiplication. Continue!")
+            println!("Matrix dimensions verified for multiplication. Continue!");
+            return true;
         }
     }
     pub fn input_elem(&mut self) {
@@ -74,5 +83,25 @@ impl Matrix {
             }
             println!();
         }
+    }
+    pub fn matrix_det(&self) {}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn is_valid() {
+        let mat1 = Matrix {
+            row: 3,
+            col: 3,
+            elements: vec![vec![0.0; 3]; 3],
+        };
+        let mat2 = Matrix {
+            row: 3,
+            col: 3,
+            elements: vec![vec![0.0; 3]; 3],
+        };
+        assert!(mat1.input_dim_valid(&mat2));
     }
 }

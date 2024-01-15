@@ -1,11 +1,7 @@
 use matrix_mult::Matrix;
 fn main() {
     println!("<dimensions of first matrix>");
-    let mut mat1 = Matrix {
-        row: 0,
-        col: 0,
-        elements: vec![],
-    };
+    let mut mat1 = Matrix::new();
     mat1.input_dim();
     println!("<dimensions of second matrix>");
     let mut mat2 = Matrix {
