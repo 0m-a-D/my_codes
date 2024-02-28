@@ -1,63 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Hello World</title>
-    <style>
-        /* Add CSS styles for the button */
-        .button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Add CSS styles for the button when hovered over */
-        .button:hover {
-            background-color: #45a049;
-        }
-    </style>
-    <script>
-        // Define a function that sends a request to the server
-        function sendRequest() {
-            // Create a new XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
-
-            // Define the request method and URL
-            xhr.open('GET', '/newpage', true);
-
-          // Set up a function to handle the server's response
-    xhr.onreadystatechange = function() {
-        // Check if the request is complete and the response is ready
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            // Check if the request was successful (status code 200)
-            if (xhr.status === 200) {
-                // Update the browser's view with the response content
-                document.documentElement.innerHTML = xhr.responseText;
-            } else {
-                // Handle the case where the request was not successful
-                console.error('Error:', xhr.status, xhr.statusText);
-            }
-        }
-    };
-
-            // Send the request
-            xhr.send();
-        }
-    </script>
+<title>Custom Hello Page</title>
+<style>
+button:hover {
+  background-color: #ccc; /* Modify this for desired hover effect */
+}
+</style>
 </head>
-
 <body>
-    <h1>Hello World</h1>
-    <p>Hi from rust server!</p>
-    <!-- Add the button element with an onclick attribute that calls the sendRequest function -->
-    <button class="button" onclick="sendRequest()">Click me!</button>
+  <button onclick="fetchAndReplace('/newpage')">Go to Hello Page</button>
+  <script>
+    // JavaScript code to handle the server request and replace content
+    function fetchAndReplace(path) {
+      fetch(path)
+        .then(response => response.text())
+        .then(data => {
+          document.body.innerHTML = data;
+        });
+    }
+  </script>
 </body>
-
 </html>
+

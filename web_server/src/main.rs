@@ -26,6 +26,7 @@ fn handle_connection(mut stream: TcpStream) {
             ("HTTP/1.1 200 OK", "hello.html")
         }
         "GET /newpage HTTP/1.1" => ("HTTP/1.1 200 OK", "hello.html"),
+        "GET /muamua HTTP/1.1" => ("HTTP/1.1 200 OK", "muamua.html"),
         _ => ("HTTP/1.1 404 NOT FOUND", "404.html"),
     };
     let contents = fs::read_to_string(filename).unwrap();
@@ -40,9 +41,9 @@ fn handle_connection(mut stream: TcpStream) {
 #[allow(unused)]
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-    let pool = ThreadPool::new(4);
+    let pool = ThreadPool::new(20);
     // 127.0.0.1 is the ip address of computer and 7878 is the port...
-    for stream in listener.incoming().take(5) {
+    for stream in listener.incoming().take(20) {
         let stream = stream.unwrap();
 
         pool.execute(|| {
