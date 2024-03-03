@@ -1,4 +1,5 @@
 use std::io;
+#[derive(Debug)]
 pub struct Matrix {
     pub row: usize,
     pub col: usize,
@@ -32,11 +33,9 @@ impl Matrix {
     pub fn input_dim_valid(&self, other: &Matrix) -> bool {
         if self.col != other.row {
             panic!("Invalid dimensions for matrix multiplication! Aborting");
-            return false;
-        } else {
-            println!("Matrix dimensions verified for multiplication. Continue!");
-            return true;
         }
+        println!("Matrix dimensions verified for multiplication. Continue!");
+        true
     }
     pub fn input_elem(&mut self) {
         for i in 0..self.row {
@@ -68,7 +67,7 @@ impl Matrix {
 
         result
     }
-    pub fn mult_result(&self) {
+    pub fn print_matrix(&self) {
         for i in 0..self.row {
             for j in 0..self.col {
                 print!("{}\t ", self.elements[i][j]);
@@ -76,13 +75,42 @@ impl Matrix {
             println!();
         }
     }
-    pub fn matrix_transpose(&self) {
-        for i in 0..self.col {
-            for j in 0..self.row {
-                print!("{}\t ", self.elements[j][i]);
+    pub fn matrix_transpose(&self) -> Matrix {
+        let mut result = Matrix {
+            row: self.col,
+            col: self.row,
+            elements: vec![vec![0.0; self.row]; self.col],
+        };
+
+        for i in 0..self.row {
+            for j in 0..self.col {
+                result.elements[j][i] = self.elements[i][j];
             }
-            println!();
         }
+
+        result
+    }
+    pub fn rotate_clockwise(&self) -> Matrix {
+        let mut rot_clock = self.matrix_transpose();
+        for i in 0..rot_clock.row {
+            for j in 0..rot_clock.col / 2 {
+                let temp = rot_clock.elements[i][j];
+                rot_clock.elements[i][j] = rot_clock.elements[i][rot_clock.col - j - 1];
+                rot_clock.elements[i][rot_clock.col - j - 1] = temp;
+            }
+        }
+        rot_clock
+    }
+    pub fn rotate_anticlockwise(&self) -> Matrix {
+        let mut rot_anticlock = self.matrix_transpose();
+        for j in 0..rot_anticlock.col {
+            for i in 0..rot_anticlock.row / 2 {
+                let temp = rot_anticlock.elements[i][j];
+                rot_anticlock.elements[i][j] = rot_anticlock.elements[rot_anticlock.row - i - 1][j];
+                rot_anticlock.elements[rot_anticlock.row - i - 1][j] = temp;
+            }
+        }
+        rot_anticlock
     }
     pub fn matrix_det(&self) {}
 }
