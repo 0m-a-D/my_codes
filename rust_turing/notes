@@ -1,0 +1,13 @@
+build a Turing Machine that halts on an binary string that is divisible by 4 (last two symbols are 0):
+
+Q: set of states
+Σ: input alphabet
+Γ: tape alphabet (finite tape)
+Σ ⊆ Γ & ∃ ⊔ ϵ Γ \ Σ
+δ: Q x Γ -> Q x Γ x {L,R}
+q0: start state
+qA: accept state
+qR: reject state
+
+->Σ = {0,1}
+->L = {w ϵ Σ* | w is even}
