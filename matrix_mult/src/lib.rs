@@ -1,9 +1,17 @@
 use std::io;
-#[derive(Debug)]
+
+use rand::Rng;
+#[derive(Debug, Clone, PartialEq)]
+// MATRIX (inefficient) implementations
 pub struct Matrix {
-    pub row: usize,
-    pub col: usize,
-    pub elements: Vec<Vec<f32>>,
+    row: usize,
+    col: usize,
+    elements: Vec<Vec<f32>>,
+}
+impl Default for Matrix {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 impl Matrix {
     pub fn new() -> Matrix {
@@ -13,7 +21,7 @@ impl Matrix {
             elements: vec![vec![0.0; 0]; 0],
         }
     }
-    pub fn input_dim(&mut self) {
+    pub fn input_dim_manual(&mut self) {
         println!("enter number of rows: ");
         let mut input = String::new();
         io::stdin()
@@ -30,10 +38,12 @@ impl Matrix {
 
         self.elements = vec![vec![0.0; self.col]; self.row];
     }
+    /// Checks if the dimensions of the matrix is is valid or not
     pub fn input_dim_valid(&self, other: &Matrix) -> bool {
         if self.col != other.row {
             panic!("Invalid dimensions for matrix multiplication! Aborting");
         }
+        // assert_eq!(self.col, other.row);
         println!("Matrix dimensions verified for multiplication. Continue!");
         true
     }
@@ -50,6 +60,7 @@ impl Matrix {
             }
         }
     }
+    /// Returns a matrix instead of modifying self.
     pub fn matrix_mult(&self, other: &Matrix) -> Matrix {
         let mut result = Matrix {
             row: self.row,
@@ -64,7 +75,6 @@ impl Matrix {
                 }
             }
         }
-
         result
     }
     pub fn print_matrix(&self) {
@@ -75,6 +85,7 @@ impl Matrix {
             println!();
         }
     }
+    /// Returns transpose of a matrix instead of modifying self.
     pub fn matrix_transpose(&self) -> Matrix {
         let mut result = Matrix {
             row: self.col,
@@ -94,9 +105,10 @@ impl Matrix {
         let mut rot_clock = self.matrix_transpose();
         for i in 0..rot_clock.row {
             for j in 0..rot_clock.col / 2 {
-                let temp = rot_clock.elements[i][j];
-                rot_clock.elements[i][j] = rot_clock.elements[i][rot_clock.col - j - 1];
-                rot_clock.elements[i][rot_clock.col - j - 1] = temp;
+                // let temp = rot_clock.elements[i][j];
+                // rot_clock.elements[i][j] = rot_clock.elements[i][rot_clock.col - j - 1];
+                // rot_clock.elements[i][rot_clock.col - j - 1] = temp;
+                rot_clock.elements[i].swap(j, rot_clock.col - j - 1);
             }
         }
         rot_clock
@@ -112,7 +124,23 @@ impl Matrix {
         }
         rot_anticlock
     }
+    pub fn spiral_clock(&self) {}
+    pub fn spiral_anticlock(&self) {}
     pub fn matrix_det(&self) {}
+}
+
+#[allow(clippy::all)]
+pub fn random_mat_generator(row: usize, col: usize) -> Vec<Vec<f32>> {
+    let mut elements = vec![];
+    for _ in 0..row {
+        let mut column = Vec::with_capacity(col);
+        for _ in 0..col {
+            let rand_num = rand::thread_rng().gen_range(0.0..=1.0);
+            column.push(rand_num);
+        }
+        elements.push(column);
+    }
+    elements
 }
 
 #[cfg(test)]
@@ -131,5 +159,17 @@ mod tests {
             elements: vec![vec![0.0; 3]; 3],
         };
         assert!(mat1.input_dim_valid(&mat2));
+    }
+
+    #[test]
+    fn rotates_anti_works() {
+        let mut a = Matrix {
+            row: 2,
+            col: 3,
+            elements: vec![vec![0.0; 3]; 2],
+        };
+        a.elements = vec![vec![1.0, 2.0, 3.0], vec![2.0, 3.0, 5.0]];
+        let b = a.rotate_anticlockwise();
+        assert!(b.elements == vec![vec![3.0, 5.0], vec![2.0, 3.0], vec![1.0, 2.0]]);
     }
 }
