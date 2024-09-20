@@ -1,4 +1,5 @@
-/// returns (BIAS, WEIGHT)
+pub mod plot;
+/// returns Option<(bias, weight)>
 pub fn linear_regression(data_points: Vec<(f32, f32)>) -> Option<(f32, f32)> {
     if data_points.is_empty() {
         return None;
