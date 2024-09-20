@@ -4,6 +4,7 @@ pub struct Dataset {
 impl Dataset {
     pub fn two_x_plus_one() -> Dataset {
         Self {
+            // try changing any of the values
             data_points: vec![
                 (1.0, 3.0),
                 (2.0, 5.0),
@@ -36,7 +37,7 @@ impl Dataset {
                 (29.0, 59.0),
                 (30.0, 61.0),
                 (31.0, 63.0),
-                (32.0, 65.0),
+                (32.0, 66.0),
                 (33.0, 67.0),
                 (34.0, 69.0),
                 (35.0, 71.0),
@@ -57,5 +58,13 @@ impl Dataset {
                 (50.0, 101.0),
             ],
         }
+    }
+    pub fn dataset_generator(datapoints: i32, m: f32, c: f32) -> Self {
+        let mut vec = Vec::new();
+        for i in 0..datapoints {
+            let data = (i as f32, i as f32 * m + c);
+            vec.push(data);
+        }
+        Dataset { data_points: vec }
     }
 }
