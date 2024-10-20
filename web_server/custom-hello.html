@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Hello Page</title>
+<style>
+button:hover {
+  background-color: #ccc; /* Modify this for desired hover effect */
+}
+</style>
+</head>
+<body>
+  <button onclick="fetchAndReplace('/newpage')">Go to Hello Page</button>
+  <script>
+    // JavaScript code to handle the server request and replace content
+    function fetchAndReplace(path) {
+      fetch(path)
+        .then(response => response.text())
+        .then(data => {
+          document.body.innerHTML = data;
+        });
+    }
+  </script>
+</body>
+</html>
+
