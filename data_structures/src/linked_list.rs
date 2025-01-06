@@ -1,13 +1,19 @@
 // Unsafe doubly linked list implementation [use box to free created nodes after program ends]
 // scrap out entire implementation to USE smart pointers...
 mod xor_list;
-#[derive(Debug)]
-pub struct Node<T: std::fmt::Debug> {
-    value: T,
+#[derive(Debug, Clone, Copy)]
+pub struct Node<T: std::fmt::Debug>
+where
+    T: Copy + Clone,
+{
+    pub value: T,
     next: Option<*mut Node<T>>,
     prev: Option<*mut Node<T>>,
 }
-impl<T: std::fmt::Debug> Node<T> {
+impl<T: std::fmt::Debug> Node<T>
+where
+    T: Copy + Clone,
+{
     fn new(value: T) -> Node<T> {
         Self {
             value,
@@ -17,13 +23,19 @@ impl<T: std::fmt::Debug> Node<T> {
     }
 }
 
-#[derive(Debug)]
-pub struct LinkedList<T: std::fmt::Debug> {
+#[derive(Debug, Clone, Copy)]
+pub struct LinkedList<T: std::fmt::Debug>
+where
+    T: Copy + Clone,
+{
     size: u32,
     head: Option<*mut Node<T>>,
     tail: Option<*mut Node<T>>,
 }
-impl<T: std::fmt::Debug> LinkedList<T> {
+impl<T: std::fmt::Debug> LinkedList<T>
+where
+    T: Copy + Clone,
+{
     pub fn new() -> Self {
         Self {
             size: 0,
@@ -63,11 +75,8 @@ impl<T: std::fmt::Debug> LinkedList<T> {
         }
         self.size += 1;
     }
-    /// USE THIS FOR self.size > INDEX > 1...else use insert_at_head() / insert_at_tail()
+    /// USE THIS FOR INDEX ∈ [0, self.size-1]...else use insert_at_head() / insert_at_tail()
     pub fn insert_at_ith(&mut self, index: u32, obj: T) {
-        if index > self.size {
-            panic!("index out of bounds! should be between 0 and {}", self.size);
-        }
         let new_node = Box::new(Node::new(obj));
         let raw_ptr = Box::into_raw(new_node);
         let node_at_index = self.get_node(index);
@@ -110,11 +119,8 @@ impl<T: std::fmt::Debug> LinkedList<T> {
         }
         self.size -= 1;
     }
-    /// USE THIS FOR self.size > INDEX > 1...else use delete_at_head() / delete_at_tail()
+    /// USE THIS FOR INDEX ∈ [0, self.size-1]...else use delete_at_head() / delete_at_tail()
     pub fn delete_at_ith(&mut self, index: u32) {
-        if index > self.size {
-            panic!("index out of bounds! should be between 0 and {}", self.size);
-        }
         let deleted_node = self.get_node(index);
         let prev = (deleted_node).prev;
         let next = (deleted_node).next;
@@ -125,8 +131,10 @@ impl<T: std::fmt::Debug> LinkedList<T> {
         }
         self.size -= 1;
     }
-    pub fn get_node(&mut self, mut index: u32) -> &mut Node<T> {
-        if index > self.size {
+
+    // FIXME: indexing issue in get_node()
+    pub fn get_node(&mut self, index: u32) -> &mut Node<T> {
+        if index >= self.size {
             panic!(
                 "index out of bounds! should be between 0 and length of this list: {}",
                 self.size
@@ -134,25 +142,27 @@ impl<T: std::fmt::Debug> LinkedList<T> {
         }
         if index < self.size / 2 {
             unsafe {
-                let mut head = self.head;
-                let mut node_ptr = head;
-                while index > 1 {
-                    node_ptr = (*head.unwrap()).next;
-                    head = node_ptr;
-                    index -= 1;
+                let mut current = self.head;
+                let mut count = 0;
+
+                while count < index {
+                    current = (*current.unwrap()).next;
+                    count += 1;
                 }
-                &mut (*node_ptr.unwrap())
+
+                &mut (*current.unwrap())
             }
         } else {
-            let mut tail = self.tail;
-            let mut node_ptr = tail;
             unsafe {
-                while self.size - index > 0 {
-                    node_ptr = (*tail.unwrap()).prev;
-                    tail = node_ptr;
-                    index += 1;
+                let mut current = self.tail;
+                let mut count = self.size - 1;
+
+                while count > index {
+                    current = (*current.unwrap()).prev;
+                    count -= 1;
                 }
-                &mut (*node_ptr.unwrap())
+
+                &mut (*current.unwrap())
             }
         }
     }
@@ -160,36 +170,45 @@ impl<T: std::fmt::Debug> LinkedList<T> {
         let node = self.get_node(index);
         (node).value = new_val;
     }
-    pub fn print_list(&self) {
+    pub fn print_list(&self) -> Vec<T> {
         let mut counter = self.size;
         let mut head = self.head;
+        let mut nodes = Vec::with_capacity(self.size as usize);
         unsafe {
             while counter > 0 {
                 if let Some(node) = head {
                     print!("{:?} -> ", (*node).value);
+                    nodes.push((*node).value);
                     head = (*node).next;
                     counter -= 1;
                 }
             }
             println!();
         }
+        nodes
     }
-    pub fn print_list_reversed(&self) {
+    pub fn print_list_reversed(&self) -> Vec<T> {
         let mut counter = self.size;
         let mut tail = self.tail;
+        let mut nodes = Vec::with_capacity(self.size as usize);
         unsafe {
             while counter > 0 {
                 if let Some(node) = tail {
                     print!("{:?} -> ", (*node).value);
+                    nodes.push((*node).value);
                     tail = (*node).prev;
                     counter -= 1;
                 }
             }
             println!();
         }
+        nodes
+    }
+    pub fn get_size(&self) -> u32 {
+        self.size
     }
 }
-impl<T: std::fmt::Debug> Default for LinkedList<T> {
+impl<T: std::fmt::Debug + std::marker::Copy> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
